@@ -64,22 +64,21 @@ def policy_iter_v(env, policy_eval_v=policy_eval_v, discount_factor=1.0):
 
         for s in range(env.nS):
             action_value = np.zeros(env.nA)
-            old_action = policy[s]
+            old_action = policy[s][:]
 
             for a in range(env.nA):
                 for (prob, next_state, reward, done) in env.P[s][a]:
                     action_value[a] += prob * (reward + discount_factor * V[next_state])
 
-            policy[s][:] = 0
-            policy[s][np.argmax(action_value)] = 1
+            policy[s] = np.eye(env.nA)[np.argmax(action_value)]
 
-            if np.any(old_action != policy[s]):
+            if not np.array_equal(old_action, policy[s]):
                 policy_stable = False
 
         if policy_stable:
             break
 
-    return (policy, V)
+    return policy, policy_eval_v(policy, env, discount_factor)
 
 def value_iter_q(env, theta=0.0001, discount_factor=1.0):
     """
