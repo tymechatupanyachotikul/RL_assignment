@@ -70,20 +70,16 @@ def policy_iter_v(env, policy_eval_v=policy_eval_v, discount_factor=1.0):
                 for (prob, next_state, reward, done) in env.P[s][a]:
                     action_value[a] += prob * (reward + discount_factor * V[next_state])
 
-            # find maximum action value, and update policy based on how many max actions there are, i.e. 2 max actions => 1 / 2
-            # q: implement like this or always set to 0 or 1
-            # 1: numerical imprecision of V leads to minor difference in V, causing less max actions. Round up the numbers?
-
             policy[s][:] = 0
-            best_actions = np.argwhere(action_value==np.max(action_value))
-            policy[s][best_actions] = 1 / best_actions.shape[0]
+            policy[s][np.argmax(action_value)] = 1
 
-            policy_stable = False if np.any(old_action != policy[s]) else True
+            if np.any(old_action != policy[s]):
+                policy_stable = False
 
         if policy_stable:
             break
 
-    return policy, V
+    return (policy, V)
 
 def value_iter_q(env, theta=0.0001, discount_factor=1.0):
     """
@@ -108,15 +104,16 @@ def value_iter_q(env, theta=0.0001, discount_factor=1.0):
     while True:
         delta = 0 
 
-        for s in range(env.nS):
-            for a in range(env.nA):
+        for state in range(env.nS):
+            for action in range(env.nA):
+                q_current = Q[state, action]
                 q_value = 0
 
-                for prob, next_state, reward, done in env.P[s][a]:
+                for prob, next_state, reward, done in env.P[state][action]:
                     q_value += prob * (reward + discount_factor * np.max(Q[next_state]))
 
-                delta = max(delta, abs(Q[s, a] - q_value))
-                Q[s, a] = q_value
+                delta = max(delta, abs(q_current - q_value))
+                Q[state, action] = q_value
 
         if delta < theta:
             break
@@ -124,8 +121,8 @@ def value_iter_q(env, theta=0.0001, discount_factor=1.0):
     policy = np.zeros((env.nS, env.nA))
     best_actions = np.argmax(Q, axis=1)  
 
-    for s in range(env.nS):
-        policy[s, best_actions[s]] = 1
+    for state in range(env.nS):
+        policy[state, best_actions[state]] = 1
 
 
     return policy, Q
