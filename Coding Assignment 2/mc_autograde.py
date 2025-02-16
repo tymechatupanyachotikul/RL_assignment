@@ -209,15 +209,15 @@ def mc_importance_sampling(behavior_policy, target_policy, env, num_episodes, di
         G = 0
         W = 1
 
-        for state, action, reward in reversed(list(zip(states, actions, rewards))):
-            if get_sampling_ratio(state, action) == 0:
+        for idx, (state, action, reward) in enumerate(reversed(list(zip(states, actions, rewards)))):
+            W *= get_sampling_ratio(state, action)
+            if W == 0:
                 break
 
             G = discount_factor * G + reward
 
-            returns_count[state] += 1
-            V[state] += W / returns_count[state] * (G - V[state])
-
-            W *= get_sampling_ratio(state, action)
+            if state not in states[: len(states) - idx - 1]:
+                returns_count[state] += 1
+                V[state] += W / returns_count[state] * (G - V[state])
 
     return V
