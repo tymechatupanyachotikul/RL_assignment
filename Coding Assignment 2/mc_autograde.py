@@ -22,202 +22,6 @@ class SimpleBlackjackPolicy(object):
             Numpy array filled with probabilities (same length as states and actions)
         """
         # YOUR CODE HERE
-        raise NotImplementedError
-        return np.array(probs)
-
-    def sample_action(self, state):
-        """
-        This method takes a state as input and returns an action sampled from this policy.
-
-        Args:
-            state: current state
-
-        Returns:
-            An action (int).
-        """
-        # YOUR CODE HERE
-        raise NotImplementedError
-        return action
-
-class SimpleBlackjackPolicy(object):
-    """
-    A simple BlackJack policy that sticks with less than 20 points and hits otherwise.
-    """
-    def get_probs(self, states, actions):
-        """
-        This method takes a list of states and a list of actions and returns a numpy array that contains a probability
-        of perfoming action in given state for every corresponding state action pair.
-
-        Args:
-            states: a list of states.
-            actions: a list of actions.
-
-        Returns:
-            Numpy array filled with probabilities (same length as states and actions)
-        """
-        # YOUR CODE HERE
-        probs = []
-
-
-        for i in range(len(states)):
-            if states[i] >= 20:
-                if actions[i] == 0: #stick
-                    probs.append(1) #bigger then 20, thus stick is prob 1
-                else: #hit
-                    probs.append(0)
-            else:
-                if actions[i] == 0: #stick
-                    probs.append(0) #smaller 20, thus stick is prob 0
-                else: #hit
-                    probs.append(1)
-
-
-        return np.array(probs)
-
-    def sample_action(self, state):
-        """
-        This method takes a state as input and returns an action sampled from this policy.
-
-        Args:
-            state: current state
-
-        Returns:
-            An action (int).
-        """
-        # YOUR CODE HERE
-        if state >= 20:
-            action = 0 #stick
-        else:
-            action = 1 #hit
-
-
-        return action
-
-class SimpleBlackjackPolicy(object):
-    """
-    A simple BlackJack policy that sticks with less than 20 points and hits otherwise.
-    """
-    def get_probs(self, states, actions):
-        """
-        This method takes a list of states and a list of actions and returns a numpy array that contains a probability
-        of perfoming action in given state for every corresponding state action pair.
-
-        Args:
-            states: a list of states.
-            actions: a list of actions.
-
-        Returns:
-            Numpy array filled with probabilities (same length as states and actions)
-        """
-        # YOUR CODE HERE
-        probs = []
-
-
-        for i in range(len(states)):
-            if states[i] >= 20:
-                if actions[i] == 0: #stick
-                    probs.append(1) #bigger then 20, thus stick is prob 1
-                else: #hit
-                    probs.append(0)
-            else:
-                if actions[i] == 0: #stick
-                    probs.append(0) #smaller 20, thus stick is prob 0
-                else: #hit
-                    probs.append(1)
-
-
-        return np.array(probs)
-
-    def sample_action(self, state):
-        """
-        This method takes a state as input and returns an action sampled from this policy.
-
-        Args:
-            state: current state
-
-        Returns:
-            An action (int).
-        """
-        # YOUR CODE HERE
-        if state[0] >= 20:
-            action = 0 #stick
-        else:
-            action = 1 #hit
-
-
-        return action
-
-class SimpleBlackjackPolicy(object):
-    """
-    A simple BlackJack policy that sticks with less than 20 points and hits otherwise.
-    """
-    def get_probs(self, states, actions):
-        """
-        This method takes a list of states and a list of actions and returns a numpy array that contains a probability
-        of perfoming action in given state for every corresponding state action pair.
-
-        Args:
-            states: a list of states.
-            actions: a list of actions.
-
-        Returns:
-            Numpy array filled with probabilities (same length as states and actions)
-        """
-        # YOUR CODE HERE
-        probs = []
-
-
-        for i in range(len(states)):
-            if states[i][0] >= 20:
-                if actions[i][0] == 0: #stick
-                    probs.append(1) #bigger then 20, thus stick is prob 1
-                else: #hit
-                    probs.append(0)
-            else:
-                if actions[i] == 0: #stick
-                    probs.append(0) #smaller 20, thus stick is prob 0
-                else: #hit
-                    probs.append(1)
-
-
-        return np.array(probs)
-
-    def sample_action(self, state):
-        """
-        This method takes a state as input and returns an action sampled from this policy.
-
-        Args:
-            state: current state
-
-        Returns:
-            An action (int).
-        """
-        # YOUR CODE HERE
-        if state[0] >= 20:
-            action = 0 #stick
-        else:
-            action = 1 #hit
-
-
-        return action
-
-class SimpleBlackjackPolicy(object):
-    """
-    A simple BlackJack policy that sticks with less than 20 points and hits otherwise.
-    """
-    def get_probs(self, states, actions):
-        """
-        This method takes a list of states and a list of actions and returns a numpy array that contains a probability
-        of perfoming action in given state for every corresponding state action pair.
-
-        Args:
-            states: a list of states.
-            actions: a list of actions.
-
-        Returns:
-            Numpy array filled with probabilities (same length as states and actions)
-        """
-        # YOUR CODE HERE
         probs = []
 
 
@@ -233,6 +37,8 @@ class SimpleBlackjackPolicy(object):
                 else: #hit
                     probs.append(1)
 
+        # states = np.array([s[0] for s in states]) >= 20
+        # _probs = states ^ np.array(actions)
 
         return np.array(probs)
 
@@ -253,7 +59,7 @@ class SimpleBlackjackPolicy(object):
             action = 1 #hit
 
 
-        return action
+        return action #0 if state[0] >= 20 else 1
 
 def sample_episode(env, policy):
     """
@@ -330,5 +136,88 @@ def mc_prediction(policy, env, num_episodes, discount_factor=1.0, sampling_funct
                 visited_states.append(state)
                 returns_count[state] += 1
                 V[state] += (G - V[state]) / returns_count[state]
+
+    return V
+
+class RandomBlackjackPolicy(object):
+    """
+    A random BlackJack policy.
+    """
+    def get_probs(self, states, actions):
+        """
+        This method takes a list of states and a list of actions and returns a numpy array that contains
+        a probability of perfoming action in given state for every corresponding state action pair.
+
+        Args:
+            states: a list of states.
+            actions: a list of actions.
+
+        Returns:
+            Numpy array filled with probabilities (same length as states and actions)
+        """
+
+        # YOUR CODE HERE
+
+        return np.ones(len(states)) * 0.5
+
+    def sample_action(self, state):
+        """
+        This method takes a state as input and returns an action sampled from this policy.
+
+        Args:
+            state: current state
+
+        Returns:
+            An action (int).
+        """
+
+        # YOUR CODE HERE
+
+        return np.random.choice([0, 1])
+
+
+def mc_importance_sampling(behavior_policy, target_policy, env, num_episodes, discount_factor=1.0,
+                           sampling_function=sample_episode):
+    """
+    Monte Carlo prediction algorithm. Calculates the value function
+    for a given target policy using behavior policy and ordinary importance sampling.
+
+    Args:
+        behavior_policy: A policy used to collect the data.
+        target_policy: A policy which value function we want to estimate.
+        env: OpenAI gym environment.
+        num_episodes: Number of episodes to sample.
+        discount_factor: Gamma discount factor.
+        sampling_function: Function that generates data from one episode.
+
+    Returns:
+        A dictionary that maps from state -> value.
+        The state is a tuple and the value is a float.
+    """
+
+    # Keeps track of current V and count of returns for each state
+    # to calculate an update.
+    V = defaultdict(float)
+    returns_count = defaultdict(float)
+
+    get_sampling_ratio = lambda s, a: target_policy.get_probs([s], [a])[0] / behavior_policy.get_probs([s], [a])[0]
+
+    # YOUR CODE HERE
+    for _ in tqdm(range(num_episodes)):
+        states, actions, rewards, dones = sampling_function(env, behavior_policy)
+
+        G = 0
+        W = 1
+
+        for state, action, reward in reversed(list(zip(states, actions, rewards))):
+            if get_sampling_ratio(state, action) == 0:
+                break
+
+            G = discount_factor * G + reward
+
+            returns_count[state] += 1
+            V[state] += W / returns_count[state] * (G - V[state])
+
+            W *= get_sampling_ratio(state, action)
 
     return V
