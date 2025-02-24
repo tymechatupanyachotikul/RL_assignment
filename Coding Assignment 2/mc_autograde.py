@@ -125,17 +125,12 @@ def mc_prediction(policy, env, num_episodes, discount_factor=1.0, sampling_funct
 
         G = 0
 
-        visited_states = []
-
         for j in reversed(range(len(states))):
             G = discount_factor * G + rewards[j]
             state = states[j]
 
-            # first-visit monte carlo algorithm
-            if state not in visited_states:
-                visited_states.append(state)
-                returns_count[state] += 1
-                V[state] += (G - V[state]) / returns_count[state]
+            returns_count[state] += 1
+            V[state] += (G - V[state]) / returns_count[state]
 
     return V
 
@@ -174,7 +169,6 @@ class RandomBlackjackPolicy(object):
         # YOUR CODE HERE
 
         return np.random.choice([0, 1])
-
 
 def mc_importance_sampling(behavior_policy, target_policy, env, num_episodes, discount_factor=1.0,
                            sampling_function=sample_episode):
