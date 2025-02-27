@@ -31,32 +31,6 @@ class EpsilonGreedyPolicy(object):
         
         return np.random.choice(n_actions, p=action_probability)
 
-class EpsilonGreedyPolicy(object):
-    """
-    A simple epsilon greedy policy.
-    """
-    def __init__(self, Q, epsilon):
-        self.Q = Q
-        self.epsilon = epsilon
-    
-    def sample_action(self, state):
-        """
-        This method takes a state as input and returns an action sampled from this policy.  
-
-        Args:
-            state: current state
-
-        Returns:
-            An action (int).
-        """
-        
-        # YOUR CODE HERE
-        n_actions = self.Q.shape[1]
-        action_probability = np.ones(n_actions) * self.epsilon / n_actions
-        action_probability[np.argmax(self.Q[state])] += (1 - self.epsilon)
-        
-        return np.random.choice(n_actions, p=action_probability)
-
 def sarsa(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
     """
     SARSA algorithm: On-policy TD control. Finds the optimal epsilon-greedy policy.
