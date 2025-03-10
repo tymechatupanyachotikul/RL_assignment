@@ -28,7 +28,7 @@ class NNPolicy(nn.Module):
         
         # YOUR CODE HERE
 
-        return F.softmax(self.l2(F.relu(self.l1(x))), dim=1)
+        return F.softmax(self.l2(F.relu(self.l1(x.float()))), dim=1)
         
     def get_probs(self, state, actions):
         """
@@ -98,7 +98,7 @@ def sample_episode(env, policy):
 
         state = next_state
 
-    states = torch.tensor(states).unsqueeze(1)
+    states = torch.tensor(states)#.unsqueeze(1)
     actions = torch.tensor(actions).unsqueeze(1)
     rewards = torch.tensor(rewards).unsqueeze(1)
     dones = torch.tensor(dones).unsqueeze(1)
@@ -122,10 +122,14 @@ def compute_reinforce_loss(policy, episode, discount_factor):
 
     loss = 0
     G = 0
-    for state, action, reward, done in reversed(episode):
-        G  = reward + discount_factor * G
-        loss -= torch.log(policy.get_probs(state, action)) * G
+
+    states, actions, rewards, dones = episode
     
+    for t in reversed(range(len(rewards))):
+        G  = rewards[t] + discount_factor * G
+        prob = policy.get_probs(states, actions)
+        loss -= torch.log(prob[t]) * G       
+
     return loss
 
 def run_episodes_policy_gradient(policy, env, num_episodes, discount_factor, learn_rate, 
@@ -136,8 +140,14 @@ def run_episodes_policy_gradient(policy, env, num_episodes, discount_factor, lea
     for i in range(num_episodes):
         
         # YOUR CODE HERE
-        raise NotImplementedError
-                           
+        episode = sampling_function(env, policy)
+
+        loss = compute_reinforce_loss(policy, episode, discount_factor)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
         if i % 10 == 0:
             print("{2} Episode {0} finished after {1} steps"
                   .format(i, len(episode[0]), '\033[92m' if len(episode[0]) >= 195 else '\033[99m'))
